@@ -45,7 +45,6 @@ def save_frontpage(page, directory, filename):
     save_string_to_file(text, directory, filename)
     return text
 
-save_frontpage(medalje_spletna_stran, medalje_mapa, medalje_filename)
 
 def read_file_to_string(directory, filename):
     """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz."""
@@ -54,4 +53,9 @@ def read_file_to_string(directory, filename):
         text = file_in.read()
     return text
 
-read_file_to_string(medalje_mapa, medalje_filename)
+#save_frontpage(medalje_spletna_stran, medalje_mapa, medalje_filename)
+#read_file_to_string(medalje_mapa, medalje_filename)
+
+def razbitje_na_bloke(page_content):
+    """Funkcija poišče del o posameznem tekmovalcu in nam vrne seznam nizov."""
+    return re.findall(r'\{"organisation".*?\}\}\]', page_content, flags=re.DOTALL)
