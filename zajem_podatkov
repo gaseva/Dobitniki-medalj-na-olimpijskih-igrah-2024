@@ -1,0 +1,57 @@
+import csv
+import os
+import requests
+import re
+
+
+medalje_spletna_stran = 'https://olympics.com/en/paris-2024/medals/medallists'
+medalje_mapa = 'podatki'
+medalje_filename = 'medalje.html'
+csv_filename = 'medalje.csv'
+
+def download_url_to_string(url):
+    """Funkcija kot argument sprejme niz in poskusi vrniti vsebino te spletne
+    strani kot niz. V primeru, da med izvajanje pride do napake vrne None.
+    """
+    try:
+        # del kode, ki morda sproži napako
+        headers = {'User-agent': 'Chrome/124.0.6367.201'}
+        page_content = requests.get(url, headers=headers)
+    except requests.exceptions.RequestException:
+        # koda, ki se izvede pri napaki
+        # dovolj je če izpišemo opozorilo in prekinemo izvajanje funkcije
+        print('Spletna stran ni dosegljiva.')
+        return None
+    # nadaljujemo s kodo če ni prišlo do napake
+    return page_content.text #.text nam objekt spremeni v string
+
+
+def save_string_to_file(text, directory, filename):
+    """Funkcija zapiše vrednost parametra "text" v novo ustvarjeno datoteko
+    locirano v "directory"/"filename", ali povozi obstoječo. V primeru, da je
+    niz "directory" prazen datoteko ustvari v trenutni mapi.
+    """
+    os.makedirs(directory, exist_ok=True)
+    path = os.path.join(directory, filename)
+    with open(path, 'w', encoding='utf-8') as file_out:
+        file_out.write(text)
+    return None
+
+
+def save_frontpage(page, directory, filename):
+    """Funkcija shrani vsebino spletne strani na naslovu "page" v datoteko
+    "directory"/"filename"."""
+    text = download_url_to_string(page)
+    save_string_to_file(text, directory, filename)
+    return text
+
+save_frontpage(medalje_spletna_stran, medalje_mapa, medalje_filename)
+
+def read_file_to_string(directory, filename):
+    """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz."""
+    path = os.path.join(directory, filename)
+    with open(path, 'r', encoding='UTF-8') as file_in:
+        text = file_in.read()
+    return text
+
+read_file_to_string(medalje_mapa, medalje_filename)
