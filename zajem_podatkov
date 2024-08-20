@@ -4,10 +4,10 @@ import requests
 import re
 
 
-medalje_spletna_stran = 'https://olympics.com/en/paris-2024/medals/medallists'
-medalje_mapa = 'podatki'
-medalje_filename = 'medalje.html'
-csv_filename = 'medalje.csv'
+medalists_page = 'https://olympics.com/en/paris-2024/medals/medallists'
+medalists_mapa = 'podatki'
+medalists_filename = 'dobitniki_medalje.html'
+csv_filename = 'dobitniki_medalje.csv'
 
 def download_url_to_string(url):
     """Funkcija kot argument sprejme niz in poskusi vrniti vsebino te spletne
@@ -26,36 +26,81 @@ def download_url_to_string(url):
     return page_content.text #.text nam objekt spremeni v string
 
 
-def save_string_to_file(text, directory, filename):
+def save_string_to_file(text, mapa, filename):
     """Funkcija zapiše vrednost parametra "text" v novo ustvarjeno datoteko
-    locirano v "directory"/"filename", ali povozi obstoječo. V primeru, da je
-    niz "directory" prazen datoteko ustvari v trenutni mapi.
+    locirano v "mapa"/"filename", ali povozi obstoječo. V primeru, da je
+    niz "mapa" prazen datoteko ustvari v trenutni mapi.
     """
-    os.makedirs(directory, exist_ok=True)
-    path = os.path.join(directory, filename)
+    os.makedirs(mapa, exist_ok=True)
+    path = os.path.join(mapa, filename)
     with open(path, 'w', encoding='utf-8') as file_out:
         file_out.write(text)
     return None
 
 
-def save_frontpage(page, directory, filename):
+def save_frontpage(page, mapa, filename):
     """Funkcija shrani vsebino spletne strani na naslovu "page" v datoteko
-    "directory"/"filename"."""
+    "mapa"/"filename"."""
     text = download_url_to_string(page)
-    save_string_to_file(text, directory, filename)
+    save_string_to_file(text, mapa, filename)
     return text
 
 
-def read_file_to_string(directory, filename):
-    """Funkcija vrne celotno vsebino datoteke "directory"/"filename" kot niz."""
-    path = os.path.join(directory, filename)
+def read_file_to_string(mapa, filename):
+    """Funkcija vrne celotno vsebino datoteke "mapa"/"filename" kot niz."""
+    path = os.path.join(mapa, filename)
     with open(path, 'r', encoding='UTF-8') as file_in:
         text = file_in.read()
     return text
 
-#save_frontpage(medalje_spletna_stran, medalje_mapa, medalje_filename)
-#read_file_to_string(medalje_mapa, medalje_filename)
+#save_frontpage(medalists_page, medalists_mapa, medalists_filename)
+#read_file_to_string(medalists_mapa, medalists_filename)
 
-def razbitje_na_bloke(page_content):
+def razbitje_na_bloke(vsebina):
     """Funkcija poišče del o posameznem tekmovalcu in nam vrne seznam nizov."""
-    return re.findall(r'\{"organisation".*?\}\}\]', page_content, flags=re.DOTALL)
+    return re.findall(r'\{"organisation".*?\}\}\]', vsebina, flags=re.DOTALL)
+
+def izlusci_info_iz_bloka(block):
+    """Funkcija iz niza za posamezen oglasni blok izlušči podatke
+    o posameznem dobitniku medalje in shrani v slovar"""
+    vzorec_ime = r'"fullName":"(.*?)",'
+    vzorec_država = r'"organisationName":"(.*?)",'
+    vzorec_spol = r'"gender":"(.)",'
+    vzorec_zlate = r'"medalsGold":(.),'
+    vzorec_srebrne = r'"medalsSilver":(.),'
+    vzorec_bronaste = r'"medalsBronze":(.),'
+    vzorec_skupaj = r'"medalsTotal":(.),'
+    vzorec_disciplina = r'"disciplineName":"(.*?)",'
+
+    ime = re.search(vzorec_ime, block)
+    država = re.search(vzorec_država, block)
+    spol = re.search(vzorec_spol, block)
+    zlate = re.search(vzorec_zlate, block)
+    srebrne = re.search(vzorec_srebrne, block)
+    bronaste = re.search(vzorec_bronaste, block)
+    skupaj = re.search(vzorec_skupaj, block)
+    disciplina = re.search(vzorec_disciplina, block)
+    
+    return{'ime': ime.group(1), 'država': država.group(1), 'spol': spol.group(1), 
+        'disciplina': disciplina.group(1), 'zlate': zlate.group(1), 'srebrne': srebrne.group(1),
+        'bronaste': bronaste.group(1), 'skupaj': skupaj.group(1)}
+    
+def izlusci_iz_dat(mapa, filename):
+    """Funkcija iz datoteke 'filename' iz mape 'mapa' naredi seznam slovarjev za vsakega
+    dobitnika medalje z njegovimi podatki"""
+    vsebina = read_file_to_string(mapa, ime_dat)
+    bloki = razbitje_na_bloke(vsebina)
+    dobitniki_medalj = [izlusci_info_iz_bloka for blok in bloki]
+    return dobitniki_medalj
+
+
+def ustvari_cvs(mapa, filename, kategorije, medalists):
+    os.makedirs(mapa, exist_ok=True)
+    path = os.path.join(mapa, filename)
+    with open(path, 'w', encoding='utf-8', newline='') as csv_file:
+        writer = csv.DictWriter(csv_file, fieldnames=medalists)
+        writer.writeheader()
+        for medalist in medalists:
+            writer.writerow(medalist)
+    return
+
