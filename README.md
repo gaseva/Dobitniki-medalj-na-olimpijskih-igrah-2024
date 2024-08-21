@@ -2,7 +2,7 @@
 Za projektno nalogo pri predmetu *Uvod v programiranje* *(UVP)* v študijskem letu *2023/2024* sem se odločila zajeti
 in analizirati podatke o dobitnikih medalj na [**Olimpijskih igrah 2024 v Parizu**](https://olympics.com/en/paris-2024).
 
-##Uporaba programa
+## Uporaba programa
 Za uporabo mora imeti uporabnik naložene knjižnice os, requests, re in os.
 
 ## 1. del - zajem podatkov
