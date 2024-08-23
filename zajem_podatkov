@@ -84,3 +84,8 @@ def izlusci_in_shrani_csv(mapa, filename, csv_mapa, csv_filename):
     return None
 
 #izlusci_in_shrani_csv(medalists_mapa, medalists_filename, medalists_mapa, csv_filename)
+
+def main(url, mapa, filename, csv_filename):
+    shrani_html(url, mapa, filename)
+    izlusci_in_shrani_csv(mapa, filename, mapa, csv_filename)
+    return None
