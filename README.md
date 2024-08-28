@@ -3,7 +3,7 @@ Za projektno nalogo pri predmetu *Uvod v programiranje* *(UVP)* v študijskem le
 se odločila zajeti in analizirati podatke o dobitnikih medalj na [**Olimpijskih igrah 2024 v Parizu**](https://olympics.com/en/paris-2024).
 
 ## Uporaba programa
-Za uporabo mora imeti uporabnik naložene knjižnice os, requests, re, csv, pandas in matplotlib.pyplot.
+Za uporabo mora imeti uporabnik naložene knjižnice `os`, `requests`, `re`, `csv`, `pandas` in `matplotlib.pyplot`, ter nameščen `Jupyter Notebook`.
 
 ## 1. del - zajem podatkov
 V datoteki zajem_podatkov.py so funkcije, ki s spletne strani shranijo njeno vsebino kot html kodo (datoteka
